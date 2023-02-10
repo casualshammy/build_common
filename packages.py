@@ -1,6 +1,8 @@
 import os, re
+import shutil
 import tempfile
 import zipfile
+import xml.etree.ElementTree as ET
 from subprocess import call
 
 class PkgInfo:
@@ -25,6 +27,34 @@ def adjust_annotation(_dir: str, _version: str) -> str:
 
     return annotationFilePath
 
+def adjust_csproj(_dir: str, _version: str) -> str:
+    csprojFilePath = None
+    for entry in os.listdir(_dir):
+        entryPath = os.path.join(_dir, entry)
+        if (os.path.isfile(entryPath) and entryPath.endswith(".csproj")):
+            csprojFilePath = entryPath
+            break
+    
+    if (csprojFilePath == None):
+        raise FileNotFoundError(f"Csproj file if dir '{_dir}' is not found")
+    
+    print(f"Adjusting version in file '{csprojFilePath}'", flush=True)
+    tree = ET.parse(csprojFilePath)
+    root = tree.getroot()
+    for versionTag in root.iter(f"Version"):
+        versionTag.text = _version
+        tree.write(csprojFilePath)
+        return csprojFilePath
+
+    versionTag = ET.Element("Version")
+    versionTag.text = _version
+    for propertyGroupTag in root.iter(f"PropertyGroup"):
+        propertyGroupTag.append(versionTag)
+        tree.write(csprojFilePath)
+        return csprojFilePath
+
+    raise Exception(f"Can't adjust version in csproj file '{csprojFilePath}'")
+
 def create_pkg(_dir: str, _version: str, _outputZipPath: str) -> PkgInfo:
     if (os.path.isfile(_outputZipPath)):
         os.remove(_outputZipPath)
@@ -37,10 +67,22 @@ def create_pkg(_dir: str, _version: str, _outputZipPath: str) -> PkgInfo:
         print(f"Compiling pkg '{_dir}'", flush=True)
         call(f"dotnet build \"{_dir}\" -c release -o \"{tmpDir}\"")
         print(f"Zipping pkg '{_dir}'", flush=True)
-        with zipfile.ZipFile(_outputZipPath, 'w', zipfile.ZIP_DEFLATED) as zipFile:
-            for root, _, files in os.walk(tmpDir):
-                for file in files:
-                    zipFile.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file), tmpDir))
+        zip_dir(tmpDir, _outputZipPath)
 
     return PkgInfo(_outputZipPath, annotationFilePath)
-        
+
+def zip_dir(_dir: str, _outputZipPath: str) -> None:
+    if (os.path.isfile(_outputZipPath)):
+        os.remove(_outputZipPath)
+    if (not os.path.isdir(_dir)):
+        raise FileNotFoundError(f"Folder '{_dir}' is not a directory")
+
+    unneccessaryDirs = [ os.path.join(_dir, "bin"), os.path.join(_dir, "obj") ]
+    for uDir in unneccessaryDirs:
+        if (os.path.isdir(uDir)):
+            shutil.rmtree(uDir)
+
+    with zipfile.ZipFile(_outputZipPath, 'w', zipfile.ZIP_DEFLATED) as zipFile:
+        for root, _, files in os.walk(_dir):
+            for file in files:
+                zipFile.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file), _dir))
