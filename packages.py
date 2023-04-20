@@ -10,6 +10,11 @@ class PkgInfo:
         _self.pkgZipPath = _pkgZipPath
         _self.annotationPath = _annotationPath
 
+def callThrowIfError(_executable: str, _shell: bool = False) -> None:
+    result = call(_executable, shell = _shell)
+    if (result != 0):
+        raise ChildProcessError(f"Command '{_executable}' returned error code '{result}'")
+
 def adjust_annotation(_dir: str, _version: str) -> str:
     annotationFilePath = os.path.join(_dir, "annotation.json")
     print(f"Adjusting version in file '{annotationFilePath}'", flush=True)
@@ -86,3 +91,24 @@ def zip_dir(_dir: str, _outputZipPath: str) -> None:
         for root, _, files in os.walk(_dir):
             for file in files:
                 zipFile.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file), _dir))
+
+def create_webpack(_dir: str, _outputDir: str) -> None:
+    if (not os.path.isdir(_dir)):
+        raise FileNotFoundError(f"Folder '{_dir}' is not a directory")
+    
+    distDir = os.path.join(_dir, "dist")
+    if (not os.path.isdir(distDir)):
+        raise FileNotFoundError(f"Can't find dist folder '{distDir}'")
+
+    oldCwd = os.getcwd()
+    os.chdir(_dir)
+
+    print(f"Updating npm packages...", flush=True)
+    callThrowIfError(f"npm i", True)
+
+    print(f"Creating web bundle...", flush=True)
+    callThrowIfError(f"npm run build", True)
+
+    os.chdir(oldCwd)
+
+    shutil.copytree(distDir, _outputDir, dirs_exist_ok=True)
