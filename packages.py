@@ -32,7 +32,7 @@ def adjust_annotation(_dir: str, _version: str) -> str:
 
     return annotationFilePath
 
-def adjust_csproj(_dir: str, _version: str) -> str:
+def adjust_csproj_version(_dir: str, _version: str, _versionTagName: str = "Version") -> str:
     csprojFilePath = None
     for entry in os.listdir(_dir):
         entryPath = os.path.join(_dir, entry)
@@ -46,12 +46,12 @@ def adjust_csproj(_dir: str, _version: str) -> str:
     print(f"Adjusting version in file '{csprojFilePath}'", flush=True)
     tree = ET.parse(csprojFilePath)
     root = tree.getroot()
-    for versionTag in root.iter(f"Version"):
+    for versionTag in root.iter(_versionTagName):
         versionTag.text = _version
         tree.write(csprojFilePath)
         return csprojFilePath
 
-    versionTag = ET.Element("Version")
+    versionTag = ET.Element(_versionTagName)
     versionTag.text = _version
     for propertyGroupTag in root.iter(f"PropertyGroup"):
         propertyGroupTag.append(versionTag)
