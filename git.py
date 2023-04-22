@@ -1,5 +1,5 @@
 import subprocess
-import utils
+from .utils import callThrowIfError
 
 def get_latest_tag() -> str:
     tag = subprocess.check_output(['git', 'describe', '--tags', '--abbrev=0'])
@@ -18,7 +18,7 @@ def get_last_commit_index() -> int:
     return index
 
 def create_tag_and_push(_userName: str, _tag: str) -> None:
-    utils.callThrowIfError(f"git config user.name \"{_userName}\"")
-    utils.callThrowIfError(f"git config user.email \"{_userName}@users.noreply.github.com\"")
-    utils.callThrowIfError(f"git tag -f {_tag}")
-    utils.callThrowIfError(f"git push --force origin {_tag}")
+    callThrowIfError(f"git config user.name \"{_userName}\"")
+    callThrowIfError(f"git config user.email \"{_userName}@users.noreply.github.com\"")
+    callThrowIfError(f"git tag -f {_tag}")
+    callThrowIfError(f"git push --force origin {_tag}")
