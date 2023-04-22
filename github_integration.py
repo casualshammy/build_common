@@ -1,5 +1,6 @@
-import os
-import build_common.git as git
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import git
 
 branch = git.get_current_branch()
 commitIndex = git.get_last_commit_index()
