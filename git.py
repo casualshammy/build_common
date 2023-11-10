@@ -6,10 +6,15 @@ def get_latest_tag() -> str:
     tag = str(tag, encoding='utf8').strip()
     return tag
 
-def get_current_branch() -> str:
+def get_version_from_current_branch() -> str:
     branch = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD'])
     branch = str(branch, encoding='utf8').strip()
     return branch.split("/")[-1]
+    
+def get_current_branch_name() -> str:
+    branch = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD'])
+    branch = str(branch, encoding='utf8').strip()
+    return branch
 
 def get_last_commit_index() -> int:
     index = subprocess.check_output(['git', 'rev-list', 'HEAD', '--count'])
