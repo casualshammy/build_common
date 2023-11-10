@@ -17,9 +17,11 @@ def get_last_commit_index() -> int:
     index = int(index)
     return index
 
-def create_tag_and_push(_userName: str, _tag: str) -> None:
-    callThrowIfError(f"git config user.name \"{_userName}\"")
-    callThrowIfError(f"git config user.email \"{_userName}@users.noreply.github.com\"")
+def create_tag_and_push(_tag: str, _repositorySlug: str = "origin", _userName: str | None = None) -> None:
+    if (_userName != None):
+        callThrowIfError(f"git config user.name \"{_userName}\"")
+        callThrowIfError(f"git config user.email \"{_userName}@users.noreply.github.com\"")
+    
     callThrowIfError(f"git tag -f {_tag}")
     callThrowIfError(f"git push --force origin {_tag}")
 
