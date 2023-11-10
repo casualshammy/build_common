@@ -22,3 +22,11 @@ def create_tag_and_push(_userName: str, _tag: str) -> None:
     callThrowIfError(f"git config user.email \"{_userName}@users.noreply.github.com\"")
     callThrowIfError(f"git tag -f {_tag}")
     callThrowIfError(f"git push --force origin {_tag}")
+
+def merge(_dstBranch: str, _srcBranch: str, _push: bool = True) -> None:
+    callThrowIfError(f"git checkout {_dstBranch}")
+    callThrowIfError(f"git fetch")
+    callThrowIfError(f"git pull")
+    callThrowIfError(f"git merge {_srcBranch}")
+    if (_push):
+        callThrowIfError(f"git push")
