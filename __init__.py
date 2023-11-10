@@ -1,7 +1,7 @@
 import os
 from .git import *
 
-branch = get_current_branch()
+branch = get_version_from_current_branch()
 commitIndex = get_last_commit_index()
 version = f"{branch}.{commitIndex}"
 
