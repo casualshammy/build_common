@@ -30,7 +30,11 @@ def create_tag_and_push(_tag: str, _repositorySlug: str = "origin", _userName: s
     callThrowIfError(f"git tag -f {_tag}")
     callThrowIfError(f"git push --force origin {_tag}")
 
-def merge(_dstBranch: str, _srcBranch: str, _push: bool = True) -> None:
+def merge(_dstBranch: str, _srcBranch: str, _push: bool = True, _userName: str | None = None) -> None:
+    if (_userName != None):
+        callThrowIfError(f"git config user.name \"{_userName}\"")
+        callThrowIfError(f"git config user.email \"{_userName}@users.noreply.github.com\"")
+        
     callThrowIfError(f"git checkout {_dstBranch}")
     callThrowIfError(f"git fetch")
     callThrowIfError(f"git pull")
