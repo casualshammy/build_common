@@ -41,3 +41,5 @@ def merge(_dstBranch: str, _srcBranch: str, _push: bool = True, _userName: str |
     callThrowIfError(f"git merge {_srcBranch}")
     if (_push):
         callThrowIfError(f"git push")
+        
+    callThrowIfError(f"git checkout {_srcBranch}")
