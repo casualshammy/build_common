@@ -22,24 +22,24 @@ def get_last_commit_index() -> int:
     index = int(index)
     return index
 
-def create_tag_and_push(_tag: str, _repositorySlug: str = "origin", _userName: str | None = None) -> None:
+def create_tag_and_push(_tag: str, _repositorySlug: str = "origin", _userName: str | None = None, _shell: bool = False) -> None:
     if (_userName != None):
-        callThrowIfError(f"git config user.name \"{_userName}\"")
-        callThrowIfError(f"git config user.email \"{_userName}@users.noreply.github.com\"")
+        callThrowIfError(f"git config user.name \"{_userName}\"", _shell)
+        callThrowIfError(f"git config user.email \"{_userName}@users.noreply.github.com\"", _shell)
     
-    callThrowIfError(f"git tag -f {_tag}")
-    callThrowIfError(f"git push --force origin {_tag}")
+    callThrowIfError(f"git tag -f {_tag}", _shell)
+    callThrowIfError(f"git push --force origin {_tag}", _shell)
 
-def merge(_dstBranch: str, _srcBranch: str, _push: bool = True, _userName: str | None = None) -> None:
+def merge(_dstBranch: str, _srcBranch: str, _push: bool = True, _userName: str | None = None, _shell: bool = False) -> None:
     if (_userName != None):
-        callThrowIfError(f"git config user.name \"{_userName}\"")
-        callThrowIfError(f"git config user.email \"{_userName}@users.noreply.github.com\"")
+        callThrowIfError(f"git config user.name \"{_userName}\"", _shell)
+        callThrowIfError(f"git config user.email \"{_userName}@users.noreply.github.com\"", _shell)
         
-    callThrowIfError(f"git checkout {_dstBranch}")
-    callThrowIfError(f"git fetch")
-    callThrowIfError(f"git pull")
-    callThrowIfError(f"git merge {_srcBranch}")
+    callThrowIfError(f"git checkout {_dstBranch}", _shell)
+    callThrowIfError(f"git fetch", _shell)
+    callThrowIfError(f"git pull", _shell)
+    callThrowIfError(f"git merge {_srcBranch}", _shell)
     if (_push):
-        callThrowIfError(f"git push")
+        callThrowIfError(f"git push", _shell)
         
-    callThrowIfError(f"git checkout {_srcBranch}")
+    callThrowIfError(f"git checkout {_srcBranch}", _shell)
