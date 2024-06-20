@@ -5,7 +5,7 @@ def buildPush(
     _dockerfile: str,
     _login: str, 
     _pass: str, 
-    _shell: bool = False) -> None:
+    _shell: bool = True) -> None:
   callThrowIfError(f"docker login -u {_login} -p {_pass}", _shell)
   try:
     callThrowIfError(f"docker build --tag {_tag} -f {_dockerfile} .", _shell)

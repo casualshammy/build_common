@@ -60,6 +60,34 @@ def adjust_csproj_version(_dir: str, _version: str, _versionTagName: str = "Vers
 
     raise Exception(f"Can't adjust version in csproj file '{csprojFilePath}'")
 
+def csproj_switch_aot(_dir: str, aotEnabled: bool) -> None:
+    csprojFilePath = None
+    for entry in os.listdir(_dir):
+        entryPath = os.path.join(_dir, entry)
+        if (os.path.isfile(entryPath) and entryPath.endswith(".csproj")):
+            csprojFilePath = entryPath
+            break
+
+    if (csprojFilePath == None):
+        raise FileNotFoundError(f"Csproj file if dir '{_dir}' is not found")
+    
+    tree = ET.parse(csprojFilePath)
+    root = tree.getroot()
+
+    for versionTag in root.iter("PublishAot"):
+        versionTag.text = "true" if aotEnabled else "false"
+        tree.write(csprojFilePath)
+        return
+    
+    versionTag = ET.Element("PublishAot")
+    versionTag.text = "true" if aotEnabled else "false"
+    for propertyGroupTag in root.iter(f"PropertyGroup"):
+        propertyGroupTag.append(versionTag)
+        tree.write(csprojFilePath)
+        return
+
+    raise Exception(f"Can't adjust version in csproj file '{csprojFilePath}'")
+
 def create_pkg(_dir: str, _version: str, _outputZipPath: str) -> PkgInfo:
     if (os.path.isfile(_outputZipPath)):
         os.remove(_outputZipPath)
