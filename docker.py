@@ -1,4 +1,4 @@
-from .utils import callThrowIfError
+from . import utils
 
 def buildPush(
     _tag: str, 
@@ -6,9 +6,9 @@ def buildPush(
     _login: str, 
     _pass: str, 
     _shell: bool = True) -> None:
-  callThrowIfError(f"docker login -u {_login} -p {_pass}", _shell)
+  utils.callThrowIfError(f"docker login -u {_login} -p {_pass}", _shell)
   try:
-    callThrowIfError(f"docker build --tag {_tag} -f {_dockerfile} .", _shell)
-    callThrowIfError(f"docker push {_tag}", _shell)
+    utils.callThrowIfError(f"docker build --tag {_tag} -f {_dockerfile} .", _shell)
+    utils.callThrowIfError(f"docker push {_tag}", _shell)
   finally:
-    callThrowIfError(f"docker logout", _shell)
+    utils.callThrowIfError(f"docker logout", _shell)

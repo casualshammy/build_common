@@ -1,6 +1,6 @@
 import os
 import shutil
-import utils
+from . import utils
 
 def npm_build(
         _sourceDir: str, 

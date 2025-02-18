@@ -3,7 +3,7 @@ import shutil
 import tempfile
 import zipfile
 import xml.etree.ElementTree as ET
-import utils
+from . import utils
 from subprocess import call
 
 

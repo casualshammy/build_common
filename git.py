@@ -1,5 +1,5 @@
 import subprocess
-from .utils import callThrowIfError
+from . import utils
 
 def get_latest_tag() -> str:
     tag = subprocess.check_output(['git', 'describe', '--tags', '--abbrev=0'])
@@ -24,22 +24,22 @@ def get_last_commit_index() -> int:
 
 def create_tag_and_push(_tag: str, _repositorySlug: str = "origin", _userName: str | None = None, _shell: bool = False) -> None:
     if (_userName != None):
-        callThrowIfError(f"git config user.name \"{_userName}\"", _shell)
-        callThrowIfError(f"git config user.email \"{_userName}@users.noreply.github.com\"", _shell)
+        utils.callThrowIfError(f"git config user.name \"{_userName}\"", _shell)
+        utils.callThrowIfError(f"git config user.email \"{_userName}@users.noreply.github.com\"", _shell)
     
-    callThrowIfError(f"git tag -f {_tag}", _shell)
-    callThrowIfError(f"git push --force origin {_tag}", _shell)
+    utils.callThrowIfError(f"git tag -f {_tag}", _shell)
+    utils.callThrowIfError(f"git push --force origin {_tag}", _shell)
 
 def merge(_dstBranch: str, _srcBranch: str, _push: bool = True, _userName: str | None = None, _shell: bool = False) -> None:
     if (_userName != None):
-        callThrowIfError(f"git config user.name \"{_userName}\"", _shell)
-        callThrowIfError(f"git config user.email \"{_userName}@users.noreply.github.com\"", _shell)
+        utils.callThrowIfError(f"git config user.name \"{_userName}\"", _shell)
+        utils.callThrowIfError(f"git config user.email \"{_userName}@users.noreply.github.com\"", _shell)
         
-    callThrowIfError(f"git checkout {_dstBranch}", _shell)
-    callThrowIfError(f"git fetch", _shell)
-    callThrowIfError(f"git pull", _shell)
-    callThrowIfError(f"git merge {_srcBranch}", _shell)
+    utils.callThrowIfError(f"git checkout {_dstBranch}", _shell)
+    utils.callThrowIfError(f"git fetch", _shell)
+    utils.callThrowIfError(f"git pull", _shell)
+    utils.callThrowIfError(f"git merge {_srcBranch}", _shell)
     if (_push):
-        callThrowIfError(f"git push", _shell)
+        utils.callThrowIfError(f"git push", _shell)
         
-    callThrowIfError(f"git checkout {_srcBranch}", _shell)
+    utils.callThrowIfError(f"git checkout {_srcBranch}", _shell)
