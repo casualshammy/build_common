@@ -3,17 +3,14 @@ import shutil
 import tempfile
 import zipfile
 import xml.etree.ElementTree as ET
+import utils
 from subprocess import call
+
 
 class PkgInfo:
     def __init__(_self, _pkgZipPath: str, _annotationPath: str) -> None:
         _self.pkgZipPath = _pkgZipPath
         _self.annotationPath = _annotationPath
-
-def callThrowIfError(_executable: str, _shell: bool = False) -> None:
-    result = call(_executable, shell = _shell)
-    if (result != 0):
-        raise ChildProcessError(f"Command '{_executable}' returned error code '{result}'")
 
 def adjust_annotation(_dir: str, _version: str) -> str:
     annotationFilePath = os.path.join(_dir, "annotation.json")
@@ -132,10 +129,10 @@ def create_webpack(_dir: str, _outputDir: str) -> None:
     os.chdir(_dir)
 
     print(f"Updating npm packages...", flush=True)
-    callThrowIfError(f"npm i", True)
+    utils.callThrowIfError(f"npm i", True)
 
     print(f"Creating web bundle...", flush=True)
-    callThrowIfError(f"npm run build", True)
+    utils.callThrowIfError(f"npm run build", True)
 
     os.chdir(oldCwd)
 
