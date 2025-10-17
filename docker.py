@@ -21,7 +21,6 @@ def buildPushMultiArch(
     _shell: bool = True) -> None:
   utils.callThrowIfError(f"docker login -u {_login} -p {_pass}", _shell)
   try:
-    # Build and push multi-architecture image using buildx
     utils.callThrowIfError(f"docker buildx build --platform linux/amd64,linux/arm64 --tag {_tag} -f {_dockerfile} --push .", _shell)
   finally:
     utils.callThrowIfError(f"docker logout", _shell)
