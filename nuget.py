@@ -26,7 +26,7 @@ def BuildPackNugets(_tag: str, _nugetsDir: str, _csprojFilePaths: list[str]) -> 
         dir = os.path.dirname(csprojPath)
         call(f"dotnet pack \"{dir}\" -c Release /p:Version={_tag} -o {_nugetsDir}", shell=True)
 
-def PackAllNugetsInDir(_tag: str, _outputNugetsDir: str, _sourceDir: str = None) -> None:
+def PackAllNugetsInDir(_tag: str, _outputNugetsDir: str, _sourceDir: str | None = None) -> None:
     if (_sourceDir == None):
         _sourceDir = os.getcwd()
 
@@ -37,13 +37,13 @@ def PackAllNugetsInDir(_tag: str, _outputNugetsDir: str, _sourceDir: str = None)
     print(f"=========================================================", flush=True)
 
     allProjects = GetProjectPaths(_sourceDir)
-    packableProjects = GetPackableProjects(allProjects.values())
+    packableProjects = GetPackableProjects(list(allProjects.values()))
     for csprojPath in packableProjects:
         print(f"Found packable project: '{csprojPath}'", flush=True)
 
     BuildPackNugets(_tag, _outputNugetsDir, packableProjects)
 
-def PushAllNugetsInDir(_nugetsDir: str, _apiKey: str, _remoteSourceEndpoint: str = None) -> None:
+def PushAllNugetsInDir(_nugetsDir: str, _apiKey: str, _remoteSourceEndpoint: str | None = None) -> None:
     if (_remoteSourceEndpoint == None):
         _remoteSourceEndpoint = "https://api.nuget.org/v3/index.json"
     for entryName in os.listdir(_nugetsDir):
@@ -51,9 +51,3 @@ def PushAllNugetsInDir(_nugetsDir: str, _apiKey: str, _remoteSourceEndpoint: str
         if (os.path.isfile(fullPath) and entryName.endswith(".nupkg")):
             print(f"Pushing nuget pkg: '{fullPath}'", flush=True)
             call(f"dotnet nuget push \"{fullPath}\" --api-key {_apiKey} --source {_remoteSourceEndpoint}", shell=True)
-
-# tag = subprocess.check_output(['git', 'describe', '--tags', '--abbrev=0'])
-# tag = str(tag, encoding='utf8').strip()
-# dir = os.path.join(os.getcwd(), "nugets")
-# PackAllNugetsInDir(tag, dir)
-# PushAllNugetsInDir(dir, "api-key")
