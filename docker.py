@@ -20,14 +20,15 @@ def buildPush(
     callThrowIfError(f"docker logout", _shell)
 
 def buildPushMultiArch(
-    _tag: str, 
+    _tags: list[str], 
     _dockerfile: str,
     _login: str, 
     _pass: str, 
     _shell: bool = True) -> None:
   callThrowIfError(f"docker login -u {_login} -p {_pass}", _shell)
   try:
-    callThrowIfError(f"docker buildx build --platform linux/amd64,linux/arm64 --tag {_tag} -f {_dockerfile} --push .", _shell)
+    tags = " ".join([f"--tag {t}" for t in _tags])
+    callThrowIfError(f"docker buildx build --platform linux/amd64,linux/arm64 {tags} -f {_dockerfile} --push .", _shell)
   finally:
     callThrowIfError(f"docker logout", _shell)
 
