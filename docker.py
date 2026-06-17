@@ -24,13 +24,18 @@ def buildPushMultiArch(
     _dockerfile: str,
     _login: str, 
     _pass: str, 
-    _shell: bool = True) -> None:
-  callThrowIfError(f"docker login -u {_login} -p {_pass}", _shell)
+    _platforms: list[str] | None = None,
+    _cacheFrom: list[str] | None = None,
+    _cacheTo: list[str] | None = None) -> None:
+  callThrowIfError(f"docker login -u {_login} -p {_pass}", True)
   try:
+    platforms = ",".join(_platforms or ["linux/amd64", "linux/arm64"])
     tags = " ".join([f"--tag {t}" for t in _tags])
-    callThrowIfError(f"docker buildx build --platform linux/amd64,linux/arm64 {tags} -f {_dockerfile} --push .", _shell)
+    cacheFrom = " ".join([f"--cache-from {c}" for c in (_cacheFrom or [])])
+    cacheTo = " ".join([f"--cache-to {c}" for c in (_cacheTo or [])])
+    callThrowIfError(f"docker buildx build --platform {platforms} {tags} -f {_dockerfile} {cacheFrom} {cacheTo} --push .", True)
   finally:
-    callThrowIfError(f"docker logout", _shell)
+    callThrowIfError(f"docker logout", True)
 
 def updateDockerHubDescription(
     _dockerHubRepo: str,
