@@ -57,6 +57,27 @@ def adjust_csproj_version(_dir: str, _version: str, _versionTagName: str = "Vers
 
     raise Exception(f"Can't adjust version in csproj file '{csprojFilePath}'")
 
+def adjust_python_version(_file_path: str, _version: str) -> None:
+  """
+  Adjusts the Python package version in the specified file.
+
+  Args:
+      _file_path (str): The path to the Python file containing the __version__ assignment.
+      _version (str): The new version string to set.  
+  """
+  if (not os.path.isfile(_file_path)):
+    raise FileNotFoundError(f"File '{_file_path}' is not found")
+  
+  with open(_file_path, "r", encoding="utf-8") as versionFile:
+    content = versionFile.read()
+
+  adjustedContent, matchCount = re.subn(r'^__version__ = ".*"$', f'__version__ = "{_version}"', content, flags=re.MULTILINE)
+  if (matchCount != 1):
+    raise Exception(f"Can't adjust version in file '{_file_path}'")
+  
+  with open(_file_path, "w", encoding="utf-8") as versionFile:
+    versionFile.write(adjustedContent)
+
 def csproj_switch_aot(_dir: str, aotEnabled: bool) -> None:
     csprojFilePath = None
     for entry in os.listdir(_dir):
